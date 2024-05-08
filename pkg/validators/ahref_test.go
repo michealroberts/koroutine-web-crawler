@@ -67,6 +67,18 @@ func TestValidateAHref(t *testing.T) {
 			href:     "file.txt",
 			expected: "http://example.com/dir/file.txt",
 		},
+		{
+			name:     "Whitespam Trim",
+			base:     "http://example.com/",
+			href:     "   http://example.com/   ",
+			expected: "http://example.com/",
+		},
+		{
+			name:     "Javascript void",
+			base:     "http://example.com/",
+			href:     "javascript:void(0);",
+			expected: "",
+		},
 	}
 
 	for _, tc := range tests {
