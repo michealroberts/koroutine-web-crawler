@@ -1,0 +1,17 @@
+{
+  "[go]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "golang.go",
+    "editor.showFoldingControls": "always",
+    "editor.folding": true,
+    "editor.foldingStrategy": "auto", 
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.rulers": [
+      115
+    ],
+  }
+}
