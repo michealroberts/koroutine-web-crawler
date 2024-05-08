@@ -1,0 +1,39 @@
+{
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "target": "development"
+  },
+  "customizations": {
+    "recommendations": [
+      "golang.go",
+      "neverik.go-critic"
+    ],
+    "settings": {
+      "[go]": {
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "golang.go",
+        "editor.showFoldingControls": "always",
+        "editor.folding": true,
+        "editor.foldingStrategy": "auto", 
+        "editor.formatOnSave": true,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.rulers": [
+          115
+        ]
+      },
+      "terminal.integrated.defaultProfile.linux": "zsh",
+      "terminal.integrated.profiles.linux": {
+        "zsh": {
+          "path": "zsh"
+        }
+      }
+    }
+  },
+  "forwardPorts": [],
+  "postStartCommand": "/bin/zsh",
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env.config"]
+}
