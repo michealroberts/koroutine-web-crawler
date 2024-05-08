@@ -6,7 +6,97 @@ This project is a simple web-crawler in Go lang. It is designed to be simple, fa
 
 ---
 
-## Considerations
+## Usage
+
+```go
+package main
+
+// Create a new crawler instance:
+crawler := crawler.New()
+
+// Crawl some poor website to a maximum depth of 3:
+rootNode, err := crawler.Crawl("https://example.com", 3)
+```
+
+The root structure contains a tree-like structure of recursively parsed ahrefs and their validated URL link, for example:
+
+```go
+type URLNode struct {
+	URL   string
+	Links []*URLNode
+}
+
+rootNode := &URLNode{
+  URL: "https://example.com",
+  Links: []*URLNode{
+    {
+      URL: "https://example.com/about",
+      Links: []*URLNode{
+        {
+          URL:   "https://example.com/about/team",
+          Links: nil,
+        },
+        {
+          URL:   "https://example.com/about/careers",
+          Links: nil,
+        },
+        {
+          URL:   "https://example.com/contact",
+          Links: nil,
+        },
+      },
+    },
+    {
+      URL:   "https://example.com/contact",
+      Links: nil,
+    },
+  },
+}
+```
+
+The crawler will only crawl to the maximum recursion depth provided, avoiding duplicates within an individual node, but may contain overlapping URLs in different nodes.
+
+## Example Usage
+
+```bash
+make dev
+```
+
+The crawler is designed to be simple and easy to use. 
+
+The user can also provide the seed URL and the maximum depth as command-line arguments.
+
+```bash
+go run ./cmd/app/main.go -domain=https://example.com -depth=3
+```
+
+## Local Development Setup
+
+The user can setup the development environment by either using the Dockerfile provided, or by utilising the devcontainer in Visual Studio Code.
+
+To use the Dockerfile in interactive terminal mode, the user can run the following commands:
+
+```bash
+make dev
+```
+
+Under the hood, the `make dev` command will build the Docker image and run the container in interactive mode, e.g.,
+
+```bash
+export CONTAINER_NAME="koroutine/web-crawler"
+
+docker build --target development --tag $(CONTAINER_NAME):dev .
+
+docker run -it --rm -v $(pwd):/app -w /app koroutine-web-crawler:latest
+```
+
+The user can then run the tests, build the project, and run the crawler, etc all from inside a development container:
+
+## VSCode Development Container
+
+For the latter, the user will be prompted to reload the workspace in the devcontainer. The user can then run the tests, build the project, and run the crawler, etc.
+
+## Considerations & Thought Process
 
 At first glance, crawling web-URLs is simple. However, we need to be cautious. Most websites will have sophisticated anti-crawling strategies in place, urls can be broken, and the crawler can get stuck in a loop. We want to crawl a website, recursively, but we do not want our dinner to get cold and be stuck waiting for hours. 
 
@@ -42,4 +132,12 @@ The crawler is implemented using a simple breadth-first search algorithm. It sta
 
 ## Dependencies
 
+This project is designed to be dependency light, and only uses the following dependencies:
+
+- github.com/xlab/treeprint
+
 I am not an expert in printing trees, so I have use the xlab/treeprint package to print the tree structure of the crawled URLs. The package is available at https://github.com/xlab/treeprint.
+
+- github.com/stretchr/testify/assert
+
+Because nobody likes to reinvent the testing wheel.
