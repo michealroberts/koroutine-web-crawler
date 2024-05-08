@@ -1,0 +1,21 @@
+# Always validate the PR title AND all the commits
+titleAndCommits: true
+# Allows use of Merge commits (eg on github: "Merge branch 'master' into feature/ride-unicorns")
+# this is only relevant when using commitsOnly: true (or titleAndCommits: true)
+allowMergeCommits: true
+# You can specify a list of terms to ignore (e.g., for WIP pull requests).
+ignore:
+  - wip
+# Specify the types of semantic commit messages you allow. Adjust as necessary.
+types:
+  - feat: A new feature
+  - fix: A bug fix
+  - docs: Documentation only changes
+  - style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+  - refactor: A code change that neither fixes a bug nor adds a feature
+  - perf: A code change that improves performance
+  - test: Adding missing tests or correcting existing tests
+  - build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+  - ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+  - chore: Other changes that don't modify src or test files
+  - revert: Reverts a previous commit
