@@ -29,4 +29,4 @@ jobs:
 
       # Run Go Test
       - name: Go Test 🧪
-        run: go test ./tests -v
+        run: go test ./... -v
