@@ -5,6 +5,7 @@ go 1.22.3
 require (
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/stretchr/testify v1.9.0
+	github.com/xlab/treeprint v1.2.0
 	golang.org/x/net v0.25.0
 )
 
