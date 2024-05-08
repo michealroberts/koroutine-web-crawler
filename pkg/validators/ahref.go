@@ -10,12 +10,20 @@ package validate
 
 import (
 	"net/url"
+	"strings"
 )
 
 /*****************************************************************************************************************/
 
 // ValidateAHref validates an href URL against a base URL and returns the resolved URL.
 func Ahref(base string, href string) (string, error) {
+	if href == "javascript:void(0);" {
+		return "", nil
+	}
+
+	// Trime the href URL:
+	href = strings.Trim(href, " ")
+
 	// Parse the href URL:
 	uri, err := url.Parse(href)
 
