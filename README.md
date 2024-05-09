@@ -1,4 +1,4 @@
-# koroutine-web-crawler
+# koroutine-web-crawler Part I
 
 🕷️ A simple web-crawler in Go lang
 
@@ -13,6 +13,13 @@ package main
 
 // Create a new crawler instance:
 crawler := crawler.New()
+
+// Stream the crawled output as we receive it:
+go func() {
+  for node := range crawler.Stream() {
+		fmt.Printf("Crawled URL: %s with %d links\n", node.URL, len(node.Links))
+  }
+}()
 
 // Crawl some poor website to a maximum depth of 3:
 rootNode, err := crawler.Crawl("https://example.com", 3)
@@ -56,11 +63,17 @@ rootNode := &URLNode{
 
 The crawler will only crawl to the maximum recursion depth provided, avoiding duplicates within an individual node, but may contain overlapping URLs in different nodes.
 
-## Example Usage
+## API
+
+## Example Commands
+
+To run a development container, the user can use the following command:
 
 ```bash
 make dev
 ```
+
+Or open the workspace in Visual Studio Code and use the development container. See the `.devcontainer` folder for more information.
 
 The crawler is designed to be simple and easy to use. 
 
@@ -69,6 +82,24 @@ The user can also provide the seed URL and the maximum depth as command-line arg
 ```bash
 go run ./cmd/app/main.go -domain=https://example.com -depth=3
 ```
+
+This will crawl the website `https://example.com` to a maximum depth of 3, and print the tree structure of the crawled URLs.
+
+There is also the ability to run a server that listens for incoming requests and returns the tree structure of the crawled URLs, as a server sent stream of data, adhering to the SSE standard.
+
+To run the Gin API, simply use: 
+
+```bash
+go run ./cmd/api/main.go
+```
+
+To then test the SSE route, the user can use the following command:
+
+```bash
+curl -N "http://localhost:8080/crawl?domain=https://example.com&depth=2"
+```
+
+This will stream the output, gathering links from the website `https://example.com` to a maximum depth of 2 and streaming back to the client.
 
 ## Local Development Setup
 
@@ -125,6 +156,9 @@ The testing strategy focused on these core unit tests:
 - Testing the URL filtering based on the domain
 - Testing the URL filtering based on the status code
 - Testing the URL filtering based on the depth
+- Testing for user input related edge cases
+
+My philosophy on tests is to begin with what makes sense, and as you run into issues, add more tests to cover more edge cases cases and scenarios as we find them.
 
 ## Implementation
 
