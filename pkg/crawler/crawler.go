@@ -28,6 +28,7 @@ type URLNode struct {
 /*****************************************************************************************************************/
 
 type Crawler struct {
+	Root       *URLNode
 	baseDomain string
 	visited    map[string]bool
 	mu         sync.Mutex
@@ -40,7 +41,10 @@ type Crawler struct {
 
 // NewCrawler creates a new instance of Crawler with an initialized HTTP client and visited map.
 func New() *Crawler {
+	root := &URLNode{} // Initialize with a root node if necessary
+
 	return &Crawler{
+		Root:    root,
 		visited: make(map[string]bool),
 		client: &http.Client{
 			Timeout: 10 * time.Second,
@@ -72,8 +76,10 @@ func (c *Crawler) Crawl(startURL string, maxDepth int) (*URLNode, error) {
 
 	root := &URLNode{URL: startURL}
 
+	c.Root = root
+
 	c.wg.Add(1)
-	go c.crawlRecursive(startURL, root, 0, maxDepth)
+	go c.crawlRecursive(startURL, c.Root, 0, maxDepth)
 	c.wg.Wait()
 
 	return root, nil
@@ -104,7 +110,9 @@ func (c *Crawler) crawlRecursive(currentURL string, node *URLNode, depth int, ma
 
 		childNode := &URLNode{URL: link}
 
+		c.mu.Lock()
 		node.Links = append(node.Links, childNode)
+		c.mu.Unlock()
 
 		c.stream <- childNode // send childNode to the channel
 
