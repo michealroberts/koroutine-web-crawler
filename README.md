@@ -175,3 +175,7 @@ I am not an expert in printing trees, so I have use the xlab/treeprint package t
 - github.com/stretchr/testify/assert
 
 Because nobody likes to reinvent the testing wheel.
+
+- github.com/gin-gonic/gin
+
+For the API server, I have used the Gin framework to create a simple API server that listens for incoming requests and returns the tree structure of the crawled URLs, as a server sent stream of data, adhering to the SSE standard.
