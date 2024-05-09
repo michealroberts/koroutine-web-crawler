@@ -59,6 +59,13 @@ func main() {
 	// Create a new crawler instance:
 	crawler := crawler.New()
 
+	// Start a goroutine to print the streaming results
+	go func() {
+		for node := range crawler.Stream() {
+			fmt.Printf("Crawled URL: %s with %d links\n", node.URL, len(node.Links))
+		}
+	}()
+
 	// Start timing
 	start := time.Now()
 
