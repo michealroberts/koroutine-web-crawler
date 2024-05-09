@@ -144,9 +144,9 @@ func TestCrawlerConcurrency(t *testing.T) {
 /*****************************************************************************************************************/
 
 func BenchmarkCrawler(b *testing.B) {
-	c := New()
-
 	for i := 0; i < b.N; i++ {
+		c := New()
+
 		c.Crawl("https:/koroutine.tech", 2)
 	}
 }

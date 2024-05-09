@@ -33,6 +33,7 @@ type Crawler struct {
 	mu         sync.Mutex
 	wg         sync.WaitGroup
 	client     *http.Client
+	stream     chan *URLNode // channel for streaming URL nodes
 }
 
 /*****************************************************************************************************************/
@@ -44,13 +45,23 @@ func New() *Crawler {
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
+		stream: make(chan *URLNode, 100), // buffered channel to avoid blocking
 	}
+}
+
+/*****************************************************************************************************************/
+
+// Stream provides the channel to receive streamed results
+func (c *Crawler) Stream() <-chan *URLNode {
+	return c.stream
 }
 
 /*****************************************************************************************************************/
 
 // Crawl starts the crawling process from a given URL up to a maximum depth.
 func (c *Crawler) Crawl(startURL string, maxDepth int) (*URLNode, error) {
+	defer close(c.stream) // Ensure the channel is closed when done
+
 	parsedURL, err := url.Parse(startURL)
 
 	if err != nil {
@@ -94,6 +105,8 @@ func (c *Crawler) crawlRecursive(currentURL string, node *URLNode, depth int, ma
 		childNode := &URLNode{URL: link}
 
 		node.Links = append(node.Links, childNode)
+
+		c.stream <- childNode // send childNode to the channel
 
 		c.wg.Add(1)
 
