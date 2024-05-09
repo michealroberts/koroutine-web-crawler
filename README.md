@@ -17,7 +17,7 @@ crawler := crawler.New()
 // Stream the crawled output as we receive it:
 go func() {
   for node := range crawler.Stream() {
-		fmt.Printf("Crawled URL: %s with %d links\n", node.URL, len(node.Links))
+    fmt.Printf("Crawled URL: %s with %d links\n", node.URL, len(node.Links))
   }
 }()
 
