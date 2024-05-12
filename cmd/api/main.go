@@ -100,14 +100,10 @@ func setupRouter() *gin.Engine {
 
 				// Flush the response
 				c.Writer.Flush()
-			case <-ticker.C:
-				// Send a keep-alive message periodically
-				_, writeErr := c.Writer.WriteString(": keep-alive\n\n")
-				if writeErr != nil {
-					log.Println("Write error on keep-alive:", writeErr)
-					return
-				}
-				c.Writer.Flush()
+			case <-crawler.Complete():
+				// End the request when the crawler is done
+				log.Println("Crawler has completed")
+				return
 			case <-done:
 				// End the request when the client disconnects
 				log.Println("Client has disconnected")
@@ -139,7 +135,7 @@ func main() {
 
 	// Wait for interrupt signal to gracefully shut down the server with a buffered channel
 	quit := make(chan os.Signal, 1) // Buffer size of 1
-	
+
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit
