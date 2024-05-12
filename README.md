@@ -93,6 +93,9 @@ To run the Gin API, simply use:
 go run ./cmd/api/main.go
 ```
 
+> [!IMPORTANT]  
+> If you are prompted to forward the port number from inside the devcontainer to the host machine, please do! The frontend application will not work without this.
+
 To then test the SSE route, the user can use the following command:
 
 ```bash
