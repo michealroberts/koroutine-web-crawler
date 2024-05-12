@@ -35,6 +35,7 @@ type Crawler struct {
 	wg         sync.WaitGroup
 	client     *http.Client
 	stream     chan *URLNode // channel for streaming URL nodes
+	done       chan bool
 }
 
 /*****************************************************************************************************************/
@@ -50,6 +51,7 @@ func New() *Crawler {
 			Timeout: 10 * time.Second,
 		},
 		stream: make(chan *URLNode, 100), // buffered channel to avoid blocking
+		done:   make(chan bool, 1),
 	}
 }
 
@@ -62,9 +64,17 @@ func (c *Crawler) Stream() <-chan *URLNode {
 
 /*****************************************************************************************************************/
 
+// Complete provides the channel to receive the final results
+func (c *Crawler) Complete() <-chan bool {
+	return c.done
+}
+
+/*****************************************************************************************************************/
+
 // Crawl starts the crawling process from a given URL up to a maximum depth.
 func (c *Crawler) Crawl(startURL string, maxDepth int) (*URLNode, error) {
 	defer close(c.stream) // Ensure the channel is closed when done
+	defer close(c.done)   // Ensure to close the done channel here after Wait
 
 	parsedURL, err := url.Parse(startURL)
 
@@ -81,6 +91,8 @@ func (c *Crawler) Crawl(startURL string, maxDepth int) (*URLNode, error) {
 	c.wg.Add(1)
 	go c.crawlRecursive(startURL, c.Root, 0, maxDepth)
 	c.wg.Wait()
+
+	c.done <- true
 
 	return root, nil
 }
@@ -118,9 +130,9 @@ func (c *Crawler) crawlRecursive(currentURL string, node *URLNode, depth int, ma
 
 		c.wg.Add(1)
 
-		go func() {
+		go func(link string) { // Ensure to pass link as an argument to avoid closure pitfalls
 			c.crawlRecursive(link, childNode, depth+1, maxDepth)
-		}()
+		}(link)
 	}
 }
 
